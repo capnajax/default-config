@@ -1,0 +1,19 @@
+{
+  "name": "@capnajax/default-config",
+  "version": "0.1.0",
+  "description": "Per-env config with defaults",
+  "main": "config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/capnajax/default-config.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/capnajax/default-config/issues"
+  },
+  "homepage": "https://github.com/capnajax/default-config#readme"
+}
