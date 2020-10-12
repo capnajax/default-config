@@ -1,6 +1,6 @@
 {
   "name": "@capnajax/default-config",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Per-env config with defaults",
   "main": "config.js",
   "scripts": {

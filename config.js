@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('@capnajax/debug');
+const debug = require('debug')('@capnajax/default-config');
 const fs = require('fs');
 const path = require('path');
 const YAML = require('yaml');
