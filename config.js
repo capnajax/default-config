@@ -1,6 +1,9 @@
 'use strict';
 
+const debug = require('debug')('@capnajax/debug');
 const fs = require('fs');
+const path = require('path');
+const YAML = require('yaml');
 const _ = require('lodash');
 
 let configFile;
@@ -41,8 +44,8 @@ function setupEnvName() {
 
 function setup() {
   let configFilename = setupConfigFilename();
-  
-  configFile = YAML.parse(fs.readFileSync(configFilename));
+
+  configFile = YAML.parse(fs.readFileSync(configFilename).toString());
   envName = setupEnvName();
 }
 
@@ -53,6 +56,10 @@ function config(path, defaultValue) {
     result = _.get(configFile.environments, envPath);
   } else if (_.has(configFile.default, path)) {
     result = _.get(configFile.default, path);
+  }
+  if (debug.enabled) {
+    debug('config for path', JSON.stringify(path),
+        '==', JSON.stringify(result));
   }
   return result;
 }
