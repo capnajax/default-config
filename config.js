@@ -50,10 +50,13 @@ function setup() {
 }
 
 function config(path, defaultValue) {
-  let envPath = `${envName}.${path}`;
+  let envPath = null;
   let result = defaultValue;
-  if(envName && _.has(configFile.environments, envPath)) {
-    result = _.get(configFile.environments, envPath);
+  if (envName) {
+    envPath = _.get(_.find(configFile.environments, {name: envName}), `config`);
+  }
+  if(envPath && _.has(envPath, path)) {
+    result = _.get(envPath, path);
   } else if (_.has(configFile.default, path)) {
     result = _.get(configFile.default, path);
   }
