@@ -1,29 +1,38 @@
 'use strict';
 
-const debug = require('debug')('@capnajax/default-config');
+const debug = require('@capnajax/debug')('@capnajax/default-config');
 const fs = require('fs');
 const path = require('path');
 const YAML = require('yaml');
 const _ = require('lodash');
 
 let configFile;
+let defaultConfigFile;
 let envName;
 
-function setupConfigFilename() {
+function setupConfigFilenames() {
   let configFilename = null;
   for(let i = 2; i < process.argv.length; i++) {
-    if (process.arv[i].startsWith('--config=')) {
+    if (process.argv[i].startsWith('--config=')) {
       configFilename = process.argv[i].replace(/^--config=/, '');
       break;
     }
   }
 
+  let entryPointDir = (file) => {
+    let pathname = path.join(path.dirname(require.main.filename), file);
+    let stat = fs.statSync(pathname);
+    return stat.isFile() ? pathname : null;
+  };
+
   if (!configFilename) {
     configFilename = 
-        process.env.CONFIG || path.join(__dirname, '..', 'config.yaml');
+        process.env.CONFIG || 
+        (process.env.NODE_ENV && entryPointDir(`process-${process.env.NODE_ENV}.yaml`)) ||
+        entryPointDir('config.yaml');
   }
 
-  return configFilename;
+  return {configFilename, defaultConfigFilename: entryPointDir('default-config.yaml')};
 }
 
 function setupEnvName() {
@@ -43,10 +52,18 @@ function setupEnvName() {
 }
 
 function setup() {
-  let configFilename = setupConfigFilename();
+  let configs = setupConfigFilenames();
+  let parse = filename => {
+    return YAML.parse(fs.readFileSync(filename).toString());
+  }
 
-  configFile = YAML.parse(fs.readFileSync(configFilename).toString());
+  configFile = parse(configs.configFilename);
+  defaultConfigFile = parse(configs.defaultConfigFilename);
+
   envName = setupEnvName();
+
+  debug('[setup] results:')
+  debug({envName, configFile, defaultConfigFile});
 }
 
 function config(path, defaultValue) {
@@ -59,13 +76,19 @@ function config(path, defaultValue) {
     result = _.get(envPath, path);
   } else if (_.has(configFile.default, path)) {
     result = _.get(configFile.default, path);
+  } else if (_.has(defaultConfigFile.default, path)) {
+    result = _.get(defaultConfigFile.default, path);
   }
   if (debug.enabled) {
-    debug('config for path', JSON.stringify(path),
+    debug('[config] config for path', JSON.stringify(path),
         '==', JSON.stringify(result));
   }
   return result;
 }
 
 setup();
+
+// mainly used for testing -- provides a way to redo setup, for example to rerun
+// with different environment variables
+config._setup = setup;
 module.exports = config;

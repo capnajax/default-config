@@ -1,0 +1,6 @@
+default:
+  animal: swan
+  plural: swans
+  collective-noun: herd
+  # note there is only a default section, no evironments section
+  class: bird

@@ -1,0 +1,22 @@
+default:
+  # overrides configs in the default-config.yaml below.
+  animal: wildebeest
+  plural: wildebeests
+  # collective-noun inherited from default-config.yaml
+  class: mammal
+environment:
+  # because local is not specified, if env is not specified, it'll use the default.
+  dev:
+    # overrides the default configs.
+    animal: moose
+    plural: moose
+    # collective-noun inherited from default 
+  qa:
+    animal: octopus
+    plural: octopodes
+    collective-noun: shoal
+    class: cephalopod
+  prod:
+    animal: goose
+    plural: geese
+    collective-noun: flock

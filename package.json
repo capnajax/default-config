@@ -1,10 +1,10 @@
 {
   "name": "@capnajax/default-config",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "Per-env config with defaults",
   "main": "config.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "test/runTest.js"
   },
   "repository": {
     "type": "git",
@@ -20,5 +20,9 @@
     "@capnajax/debug": "^0.1.1",
     "lodash": "^4.17.20",
     "yaml": "^1.10.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^8.2.1"
   }
 }
