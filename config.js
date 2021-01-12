@@ -21,8 +21,7 @@ function setupConfigFilenames() {
 
   let entryPointDir = (file) => {
     let pathname = path.join(path.dirname(require.main.filename), file);
-    let stat = fs.statSync(pathname);
-    return stat.isFile() ? pathname : null;
+    return fs.existsSync(pathname) ? pathname : null;
   };
 
   if (!configFilename) {
@@ -53,12 +52,16 @@ function setupEnvName() {
 
 function setup() {
   let configs = setupConfigFilenames();
+  let defaultConfigExists = fs.existsSync(configs.defaultConfigFilename);
   let parse = filename => {
     return YAML.parse(fs.readFileSync(filename).toString());
   }
 
   configFile = parse(configs.configFilename);
-  defaultConfigFile = parse(configs.defaultConfigFilename);
+
+  defaultConfigFile = defaultConfigExists
+    ? parse(configs.defaultConfigFilename)
+    : {};
 
   envName = setupEnvName();
 
@@ -76,7 +79,7 @@ function config(path, defaultValue) {
     result = _.get(envPath, path);
   } else if (_.has(configFile.default, path)) {
     result = _.get(configFile.default, path);
-  } else if (_.has(defaultConfigFile.default, path)) {
+  } else if (defaultConfigFile && _.has(defaultConfigFile.default, path)) {
     result = _.get(defaultConfigFile.default, path);
   }
   if (debug.enabled) {

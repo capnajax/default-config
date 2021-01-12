@@ -25,6 +25,8 @@ This will also get an environment name from one of these places, also in order o
 3) As specified bt a `NODE_ENV` environment variable, or
 4) Default value of `local`.
 
+Note that when configs are loaded, they are loaded using syncronous methods.
+
 ## The config file(s)
 
 A config file is a YAML file with two sections, `default` and `environments`. The `envornments` section has a section for each environment name.
