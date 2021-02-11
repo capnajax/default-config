@@ -1,11 +1,12 @@
 {
   "name": "@capnajax/default-config",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "Per-env config with defaults",
   "main": "config.js",
   "scripts": {
-    "test": "test/runTest.js"
+    "test": "cd test ; mocha ."
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/capnajax/default-config.git"

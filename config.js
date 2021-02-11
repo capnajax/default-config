@@ -1,10 +1,12 @@
 'use strict';
 
-const debug = require('@capnajax/debug')('@capnajax/default-config');
-const fs = require('fs');
-const path = require('path');
-const YAML = require('yaml');
-const _ = require('lodash');
+import debugModule from '@capnajax/debug';
+import fs from 'fs';
+import path from 'path';
+import YAML from 'yaml';
+import _ from 'lodash';
+
+const debug = debugModule('@capnajax/default-config');
 
 let configFile;
 let defaultConfigFile;
@@ -20,7 +22,7 @@ function setupConfigFilenames() {
   }
 
   let entryPointDir = (file) => {
-    let pathname = path.join(path.dirname(require.main.filename), file);
+    let pathname = path.join(process.env.PWD, file);
     return fs.existsSync(pathname) ? pathname : null;
   };
 
@@ -94,4 +96,5 @@ setup();
 // mainly used for testing -- provides a way to redo setup, for example to rerun
 // with different environment variables
 config._setup = setup;
-module.exports = config;
+
+export default config;

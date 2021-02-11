@@ -1,7 +1,9 @@
 'use strict'
 
-const c = require('../config');
-const expect = require('chai').expect;
+import c from '../config.js';
+import chai from 'chai';
+
+const { expect } = chai;
 
 describe('Core functionality', function() {
 

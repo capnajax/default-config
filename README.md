@@ -7,6 +7,12 @@ Per-env config with defaults
 npm install --save @capnajax/default-config
 ```
 
+```javascript
+import c from '@capnajax/default-config';
+
+c('config.path');
+```
+
 ## Usage
 
 Upon startup, this module obtain a config file from one of these places, in order of priority:

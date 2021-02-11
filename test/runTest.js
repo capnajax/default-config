@@ -2,20 +2,22 @@
 
 'use strict';
 
-const fs = require('fs').promises;
-const path = require('path');
+import { promises as fs } from 'fs';
+import path from 'path';
 
-const Mocha = require('mocha');
+import Mocha from 'mocha';
 const mocha = new Mocha({});
+
+const __dirname = path.resolve();
 
 Promise.resolve()
 .then(() => {
-  return fs.readdir(__dirname);
+  return fs.readdir(path.join(__dirname, 'test'));
 })
 .then(files => {
   files.forEach(file => {
     if (file.match(/^\d\d-/)) {
-      mocha.addFile(path.join(__dirname, file));
+      mocha.addFile(path.join(__dirname, 'test', file));
     }
   })
   mocha.run();
