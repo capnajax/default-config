@@ -1,4 +1,5 @@
 # default-config
+
 Per-env config with defaults
 
 ## Installation
@@ -18,18 +19,21 @@ c('config.path');
 Upon startup, this module obtain a config file from one of these places, in order of priority:
 
 1) A location specified by a `--config=<filename>` parameter,
-1) A location specified by a `CONFIG` environment variable,
-1) If the `NODE_ENV` environment variable is specified, A file called `config-[env].yaml` in the entry point module's directory, or
-1) A file called `config.yaml` in the entry point module's directory.
+1) A location specified by a `CONFIG_PATH` environment variable,
+1) `${PWD}/config-${CONFIG_ENV}.yaml`
+1) `${PWD}/config-${NODE_ENV}.yaml`
+1) `${PWD}/config.yaml`
+
+Multiple config files can be used by separating them with the system path delimiter (e.g. on POSIX `--config=./config.yaml:./secrets/secret-config.yaml`). When there are multiple files in the path have values for the same key, the last one takes precedent.
 
 Also, it will load a `default-config.yaml` from the entry point module's directory. This file specifies default configurations. Other config files will override the configs in this one.
 
 This will also get an environment name from one of these places, also in order of priority:
 
 1) As specified by a `--env=<envname>` parameter,
-2) As specified by a `CONFIG_ENV` environment variable,
-3) As specified bt a `NODE_ENV` environment variable, or
-4) Default value of `local`.
+1) As specified by a `CONFIG_ENV` environment variable,
+1) As specified bt a `NODE_ENV` environment variable, or
+1) Default value of `local`.
 
 Note that when configs are loaded, they are loaded using syncronous methods.
 
@@ -48,6 +52,7 @@ Configs are loaded in this order of priority:
 ### Example config file
 
 `config.yaml`:
+
 ```yaml
 default:
   // overrides configs in the default-config.yaml below.
@@ -72,6 +77,7 @@ environment:
 ```
 
 `default-config.yaml`
+
 ```yaml
 default:
   animal: bison
@@ -80,3 +86,12 @@ default:
 // note there is only a default section, no evironments section
 ```
 
+## Changes from v2.x to v3.x
+
+* Support for multiple config files.
+* There is no automatic checking for `default-config.yaml`.
+
+## Changes from v1.x to v2.x
+
+* Converted from a CommonJS to an ES6 module
+* The default config file is now in the current working directory, not the directory of the entry point module.

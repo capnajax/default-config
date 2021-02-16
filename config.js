@@ -8,15 +8,14 @@ import _ from 'lodash';
 
 const debug = debugModule('@capnajax/default-config');
 
-let configFile;
-let defaultConfigFile;
+let configs;
 let envName;
 
-function setupConfigFilenames() {
-  let configFilename = null;
+function setupConfigPath() {
+  let configPath = null;
   for(let i = 2; i < process.argv.length; i++) {
     if (process.argv[i].startsWith('--config=')) {
-      configFilename = process.argv[i].replace(/^--config=/, '');
+      configPath = process.argv[i].replace(/^--config=/, '');
       break;
     }
   }
@@ -26,14 +25,17 @@ function setupConfigFilenames() {
     return fs.existsSync(pathname) ? pathname : null;
   };
 
-  if (!configFilename) {
-    configFilename = 
-        process.env.CONFIG || 
-        (process.env.NODE_ENV && entryPointDir(`process-${process.env.NODE_ENV}.yaml`)) ||
+  if (!configPath) {
+    configPath = 
+        process.env.CONFIG_PATH || 
+        (process.env.CONFIG_ENV && entryPointDir(`config-${process.env.CONFIG_ENV}.yaml`)) ||
+        (process.env.NODE_ENV && entryPointDir(`config-${process.env.NODE_ENV}.yaml`)) ||
         entryPointDir('config.yaml');
   }
 
-  return {configFilename, defaultConfigFilename: entryPointDir('default-config.yaml')};
+  debug('[setupConfigPath] configPath ==', configPath);
+
+  return configPath;
 }
 
 function setupEnvName() {
@@ -53,41 +55,49 @@ function setupEnvName() {
 }
 
 function setup() {
-  let configs = setupConfigFilenames();
-  let defaultConfigExists = fs.existsSync(configs.defaultConfigFilename);
-  let parse = filename => {
-    return YAML.parse(fs.readFileSync(filename).toString());
-  }
+  let configFiles = setupConfigPath().split(path.delimiter);
 
-  configFile = parse(configs.configFilename);
+  debug('[setup] configFiles ==', configFiles);
 
-  defaultConfigFile = defaultConfigExists
-    ? parse(configs.defaultConfigFilename)
-    : {};
+  configs = _.map(configFiles, filename => {
+    let contentBuffer = fs.readFileSync(filename);
+    let result = YAML.parse(contentBuffer.toString());
+    return result;
+  })
 
   envName = setupEnvName();
 
   debug('[setup] results:')
-  debug({envName, configFile, defaultConfigFile});
+  debug({envName, configs});
 }
 
 function config(path, defaultValue) {
+  debug('[config] called on path, defaultValue ==', path, defaultValue);
   let envPath = null;
-  let result = defaultValue;
-  if (envName) {
-    envPath = _.get(_.find(configFile.environments, {name: envName}), `config`);
-  }
-  if(envPath && _.has(envPath, path)) {
-    result = _.get(envPath, path);
-  } else if (_.has(configFile.default, path)) {
-    result = _.get(configFile.default, path);
-  } else if (defaultConfigFile && _.has(defaultConfigFile.default, path)) {
-    result = _.get(defaultConfigFile.default, path);
-  }
+  let result = _.reduce(
+      configs,
+      (value, config) => {
+        debug('[config] {path, envName, value, config}:');
+        debug({path, envName, value, config});
+        envPath = _.get(_.find(_.get(config, 'environments'), {name: envName}), `config`);
+        debug('[config] envPath == ', envPath);
+        if (envPath && _.has(envPath, path)) {
+          return _.get(envPath, path);
+        } else if(_.has(config.default, path)) {
+          return _.get(config.default, path);
+        } else {
+          // value not found, keep previous value
+          return value;
+        }
+      },
+      defaultValue
+    );
+
   if (debug.enabled) {
     debug('[config] config for path', JSON.stringify(path),
         '==', JSON.stringify(result));
   }
+
   return result;
 }
 

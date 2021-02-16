@@ -8,7 +8,7 @@ const { expect } = chai;
 describe('Core functionality', function() {
 
   before(function(next) {
-    process.env.config_env = 'prod';
+    process.env.CONFIG_ENV = 'prod';
     c._setup();
     next();
   });
