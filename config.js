@@ -47,6 +47,10 @@ function setupEnvName() {
     }
   }
 
+  if (!envName && _.has(process.env, 'CONFIG_ENV')) {
+    envName = process.env.CONFIG_ENV || 'local';
+  }
+
   if (!envName) {
     envName = process.env.NODE_ENV || 'local';
   }

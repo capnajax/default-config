@@ -35,4 +35,10 @@ describe('Core functionality', function() {
     }
   );
 
+  it('Values that default to default-config file',
+    function(done) {
+      expect(c('collective-noun')).to.be.equal('herd');
+      done();
+    }
+  );
 });
