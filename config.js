@@ -42,7 +42,7 @@ function setupEnvName() {
   let envName = null;
   for(let i = 2; i < process.argv.length; i++) {
     if (process.argv[i].startsWith('--env=')) {
-      result = process.argv[i].replace(/^--env=/, '');
+      envName = process.argv[i].replace(/^--env=/, '');
       break;
     }
   }
