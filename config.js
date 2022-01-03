@@ -1,12 +1,9 @@
 'use strict';
 
-import debugModule from '@capnajax/debug';
 import fs from 'fs';
 import path from 'path';
 import YAML from 'yaml';
 import _ from 'lodash';
-
-const debug = debugModule('@capnajax/default-config');
 
 let configs;
 let envName;
@@ -32,8 +29,6 @@ function setupConfigPath() {
         (process.env.NODE_ENV && entryPointDir(`config-${process.env.NODE_ENV}.yaml`)) ||
         entryPointDir('config.yaml');
   }
-
-  debug('[setupConfigPath] configPath ==', configPath);
 
   return configPath;
 }
@@ -61,30 +56,21 @@ function setupEnvName() {
 function setup() {
   let configFiles = setupConfigPath().split(path.delimiter);
 
-  debug('[setup] configFiles ==', configFiles);
-
   configs = _.map(configFiles, filename => {
     let contentBuffer = fs.readFileSync(filename);
     let result = YAML.parse(contentBuffer.toString());
     return result;
-  })
+  });
 
   envName = setupEnvName();
-
-  debug('[setup] results:')
-  debug({envName, configs});
 }
 
 function config(path, defaultValue) {
-  debug('[config] called on path, defaultValue ==', path, defaultValue);
   let envPath = null;
   let result = _.reduce(
       configs,
       (value, config) => {
-        debug('[config] {path, envName, value, config}:');
-        debug({path, envName, value, config});
         envPath = _.get(_.find(_.get(config, 'environments'), {name: envName}), `config`);
-        debug('[config] envPath == ', envPath);
         if (envPath && _.has(envPath, path)) {
           return _.get(envPath, path);
         } else if(_.has(config.default, path)) {
@@ -96,11 +82,6 @@ function config(path, defaultValue) {
       },
       defaultValue
     );
-
-  if (debug.enabled) {
-    debug('[config] config for path', JSON.stringify(path),
-        '==', JSON.stringify(result));
-  }
 
   return result;
 }

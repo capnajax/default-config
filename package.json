@@ -18,7 +18,6 @@
   },
   "homepage": "https://github.com/capnajax/default-config#readme",
   "dependencies": {
-    "@capnajax/debug": "^1.0.1",
     "lodash": "^4.17.20",
     "yaml": "^1.10.0"
   },
